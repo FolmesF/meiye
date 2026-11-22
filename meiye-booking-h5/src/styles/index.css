@@ -1,0 +1,23 @@
+@import './tokens.css';
+
+html {
+  font-size: 37.5px;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  min-height: 100%;
+  background: var(--page-bg);
+  color: var(--text-primary);
+  font-size: var(--font-body);
+}
+
+body {
+  font-size: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}

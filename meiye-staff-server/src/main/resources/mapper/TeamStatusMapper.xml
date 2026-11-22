@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangmei.staff.mapper.TeamStatusMapper">
+
+  <select id="listStatus" resultType="com.zhangmei.staff.dto.TeamStatusRow">
+    SELECT e.id AS employee_id,
+           e.name,
+           e.mobile,
+           e.job_type,
+           e.status,
+           a.clock_in_at,
+           a.clock_out_at,
+           r.report_at AS last_report_at,
+           r.content AS last_report_content
+    FROM hr_employee e
+    LEFT JOIN hr_attendance a ON a.employee_id = e.id AND a.work_date = #{today}
+    LEFT JOIN hr_route_report r ON r.id = (
+      SELECT rr.id FROM hr_route_report rr
+      WHERE rr.employee_id = e.id
+      ORDER BY rr.report_at DESC, rr.id DESC
+      LIMIT 1
+    )
+    WHERE e.deleted = 0
+      <if test="status != null and status != ''">AND e.status = #{status}</if>
+    ORDER BY e.id
+  </select>
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangmei.store.mapper.CustomerMapper">
+
+  <sql id="filters">
+    c.deleted = 0
+    AND c.store_id = #{storeId}
+    <if test="keyword != null and keyword != ''">
+      AND (c.name LIKE CONCAT('%', #{keyword}, '%') OR c.mobile LIKE CONCAT('%', #{keyword}, '%'))
+    </if>
+    <if test="level != null and level != ''">
+      AND c.level = #{level}
+    </if>
+    <if test="createdFrom != null">
+      AND c.created_at &gt;= #{createdFrom}
+    </if>
+    <if test="createdTo != null">
+      AND c.created_at &lt; #{createdTo}
+    </if>
+  </sql>
+
+  <select id="selectCustomerRows" resultType="com.zhangmei.store.dto.CustomerRow">
+    SELECT c.id,
+           c.store_id,
+           c.name,
+           c.mobile,
+           c.account_no,
+           c.gender,
+           c.birthday,
+           c.level,
+           c.source,
+           c.address,
+           c.remark,
+           c.status,
+           c.total_amount,
+           c.visit_count,
+           c.created_at,
+           NULLIF(GREATEST(
+             IFNULL(c.last_visit_at, '1000-01-01 00:00:00'),
+             IFNULL((
+               SELECT MAX(x.consumed_at)
+               FROM biz_consumption x
+               WHERE x.customer_id = c.id
+             ), '1000-01-01 00:00:00')
+           ), '1000-01-01 00:00:00') AS last_visit_at
+    FROM biz_customer c
+    WHERE <include refid="filters"/>
+    ORDER BY c.id DESC
+    LIMIT #{offset}, #{limit}
+  </select>
+
+  <select id="countCustomerRows" resultType="long">
+    SELECT COUNT(*)
+    FROM biz_customer c
+    WHERE <include refid="filters"/>
+  </select>
+</mapper>

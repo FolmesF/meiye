@@ -1,0 +1,16 @@
+@import './tokens.css';
+
+html,
+body,
+#app {
+  margin: 0;
+  height: 100%;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: var(--font-body);
+  background: var(--page-bg);
+  color: var(--text-primary);
+}
+
+* {
+  box-sizing: border-box;
+}

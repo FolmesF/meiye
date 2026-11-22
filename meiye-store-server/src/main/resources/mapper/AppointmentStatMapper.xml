@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangmei.store.mapper.AppointmentStatMapper">
+
+  <sql id="periodExpr">
+    <choose>
+      <when test="dimension == 'DAY'">DATE_FORMAT(appoint_time, '%Y-%m-%d')</when>
+      <when test="dimension == 'WEEK'">DATE_FORMAT(DATE_SUB(appoint_time, INTERVAL WEEKDAY(appoint_time) DAY), '%Y-%m-%d')</when>
+      <otherwise>DATE_FORMAT(appoint_time, '%Y-%m')</otherwise>
+    </choose>
+  </sql>
+
+  <select id="aggregate" resultType="com.zhangmei.store.dto.AppointmentStatRow">
+    SELECT
+      <include refid="periodExpr"/> AS period,
+      COUNT(*) AS appointment_count,
+      SUM(CASE WHEN status IN ('ARRIVED', 'COMPLETED') THEN 1 ELSE 0 END) AS arrived_count,
+      SUM(CASE WHEN status = 'CANCELLED' THEN 1 ELSE 0 END) AS cancelled_count
+    FROM biz_appointment
+    WHERE deleted = 0
+      AND appoint_time &gt;= #{start}
+      AND appoint_time &lt; #{end}
+      <if test="storeId != null">
+        AND store_id = #{storeId}
+      </if>
+    GROUP BY
+      <include refid="periodExpr"/>
+    ORDER BY period
+  </select>
+</mapper>

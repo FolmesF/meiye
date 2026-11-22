@@ -1,0 +1,50 @@
+server:
+  port: 8082
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+  application:
+    name: meiye-booking-server
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/meiye_booking?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      timeout: 2s
+  jackson:
+    time-zone: Asia/Shanghai
+    serialization:
+      write-dates-as-timestamps: false
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+meiye:
+  booking:
+    slot-step-minutes: 30
+    expose-login-code: true
+    sms-enabled: false
+    push-enabled: false
+    login-code-ttl-seconds: 300
+    today-slot-ttl-seconds: 60
+    future-slot-ttl-seconds: 300
+    slot-version-ttl-hours: 48
+    beautician-lock-seconds: 10
+    token-ttl-days: 7
+    arrival-remind-hours: 2
+    store-base-url: http://127.0.0.1:8081

@@ -1,0 +1,11 @@
+:root {
+  --brand: #b4536a;
+  --brand-soft: #f8eef1;
+  --text-primary: #1f2329;
+  --text-secondary: #646566;
+  --page-bg: #f6f3f4;
+  --card-radius: 12px;
+  --space-page: 16px;
+  --font-body: 14px;
+  --font-title: 18px;
+}

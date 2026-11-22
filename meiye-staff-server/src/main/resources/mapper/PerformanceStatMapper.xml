@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangmei.staff.mapper.PerformanceStatMapper">
+
+  <sql id="periodExpr">
+    <choose>
+      <when test="dimension == 'DAY'">DATE_FORMAT(biz_date, '%Y-%m-%d')</when>
+      <when test="dimension == 'WEEK'">DATE_FORMAT(DATE_SUB(biz_date, INTERVAL WEEKDAY(biz_date) DAY), '%Y-%m-%d')</when>
+      <otherwise>DATE_FORMAT(biz_date, '%Y-%m')</otherwise>
+    </choose>
+  </sql>
+
+  <select id="aggregate" resultType="com.zhangmei.staff.dto.PerformanceStatRow">
+    SELECT
+      <include refid="periodExpr"/> AS period
+      <if test="groupByPerson">, employee_id</if>
+      <if test="groupByStore">, store_id</if>
+      , SUM(amount) AS amount
+      , COUNT(*) AS biz_count
+    FROM hr_performance
+    WHERE biz_date &gt;= #{startDate}
+      AND biz_date &lt;= #{endDate}
+      <if test="employeeId != null">AND employee_id = #{employeeId}</if>
+      <if test="storeId != null">AND store_id = #{storeId}</if>
+    GROUP BY
+      <include refid="periodExpr"/>
+      <if test="groupByPerson">, employee_id</if>
+      <if test="groupByStore">, store_id</if>
+    ORDER BY period
+  </select>
+</mapper>
